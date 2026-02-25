@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify
-import datetime
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -12,30 +12,31 @@ def ai_core():
     data = request.json
     user_msg = data.get('message', '').lower()
     
-    # Knowledge Engine
-    responses = {
-        "identitas": "Saya adalah asisten AI Harry, seorang Web Developer yang ahli dalam membangun arsitektur sistem backend berperforma tinggi.",
-        "portfolio": "Website ini adalah portofolio resmi Harry untuk menampilkan proyek Web Development dan keahlian sistemnya.",
-        "tech": "Harry menguasai Python, Flask, Linux Server, dan Database Management.",
-        "tema": "Anda bisa mengubah tema menjadi Gelap, Terang, atau Otomatis melalui tombol di navigasi atas."
+    # Brain Logic Harry (Knowledge Base)
+    knowledge = {
+        "identitas": ["siapa", "nama", "profil", "harry", "developer", "pengembang", "siapa anda"],
+        "portofolio": ["apa ini", "website apa", "fungsi", "tujuan", "portfolio"],
+        "proyek": ["project", "karya", "buat", "hitungcuan", "qrify", "hasil kerja"],
+        "teknologi": ["stack", "bahasa", "coding", "python", "flask", "database", "tech"],
+        "layanan": ["jasa", "sewa", "hire", "kerja", "bangun", "sistem", "kontak"]
     }
     
-    # Logic Smart Reply
-    if any(x in user_msg for x in ["siapa", "harry", "developer"]):
-        reply = responses["identitas"]
-    elif any(x in user_msg for x in ["portfolio", "website apa"]):
-        reply = responses["portfolio"]
-    elif any(x in user_msg for x in ["stack", "bahasa", "teknologi"]):
-        reply = responses["tech"]
-    elif any(x in user_msg for x in ["tema", "warna", "gelap", "terang"]):
-        reply = responses["tema"]
+    if any(word in user_msg for word in knowledge["identitas"]):
+        reply = "Saya adalah asisten virtual Harry. Harry adalah seorang Web Developer profesional yang berfokus pada arsitektur backend dan sistem skala besar."
+    elif any(word in user_msg for word in knowledge["portofolio"]):
+        reply = "Ini adalah portofolio resmi Harry. Dirancang untuk mendemonstrasikan keahlian dalam Full-Stack Development dan Sistem Neural."
+    elif any(word in user_msg for word in knowledge["proyek"]):
+        reply = "Harry telah membangun HitungCuan id dan QRify. Semua proyek mengutamakan stabilitas dan performa tinggi."
+    elif any(word in user_msg for word in knowledge["teknologi"]):
+        reply = "Teknologi utama yang digunakan meliputi Python, Flask, PostgreSQL, Docker, dan deployment di Arch Linux."
+    elif any(word in user_msg for word in knowledge["layanan"]):
+        reply = "Harry melayani konsultasi arsitektur web dan jasa backend development. Silakan hubungi via email di harry.surya23@gmail.com."
     else:
-        reply = f"Menarik. Sebagai Web Developer, Harry selalu mencari solusi untuk '{user_msg}'. Ada hal spesifik tentang sistem yang ingin Anda diskusikan?"
+        reply = f"Pertanyaan '{user_msg}' telah diterima. Sebagai Web Developer, Harry selalu siap memberikan solusi teknis terbaik untuk Anda."
 
     return jsonify({
         "reply": reply,
-        "timestamp": datetime.datetime.now().strftime("%H:%M:%S"),
-        "status": "Online"
+        "time": datetime.now().strftime("%H:%M:%S")
     })
 
 if __name__ == '__main__':
