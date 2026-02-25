@@ -19,3 +19,15 @@ nohup: ignoring input
  * Restarting with stat
  * Debugger is active!
  * Debugger PIN: 871-360-009
+127.0.0.1 - - [25/Feb/2026 03:19:36] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [25/Feb/2026 03:19:44] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [25/Feb/2026 03:23:53] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [25/Feb/2026 03:24:51] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [25/Feb/2026 03:33:50] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [25/Feb/2026 03:34:54] "POST /api/ai HTTP/1.1" 200 -
+ * Detected change in '/root/harry_portfolio/app.py', reloading
+ * Restarting with stat
+Traceback (most recent call last):
+  File "/root/harry_portfolio/app.py", line 3, in <module>
+    import requests
+ModuleNotFoundError: No module named 'requests'

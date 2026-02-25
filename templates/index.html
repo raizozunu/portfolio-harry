@@ -3,180 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HARRY | Web Developer Portfolio</title>
+    <title>HARRY | Web Developer dan System Architect</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/typewriter-effect@latest/dist/core.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;500&family=Inter:wght@400;900&display=swap" rel="stylesheet">
 
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
-                    colors: {
-                        'hacker-accent': '#00FFB2',
-                        'dark-bg': '#020408',
-                        'light-bg': '#F9FAFB',
-                        'hacker-border': '#1F2937'
-                    }
+                    colors: { 'hacker-accent': '#00FFB2', 'dark-bg': '#020408' }
                 }
             }
         }
     </script>
 
     <style>
-        body { transition: background-color 0.5s, color 0.5s; font-family: 'Inter', sans-serif; }
-        .dark { background-color: #020408; color: #E5E7EB; }
-        .light { background-color: #F9FAFB; color: #111827; }
-        #canvas-container { position: fixed; top: 0; left: 0; z-index: -1; width: 100%; height: 100vh; pointer-events: none; }
-        .glass { backdrop-filter: blur(12px); border: 1px solid rgba(128, 128, 128, 0.2); }
-        .terminal-window { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100; width: 95%; max-width: 650px; }
-        .pulse-mic { animation: pulse 1s infinite; color: #EF4444 !important; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-        .pill { padding: 4px 12px; font-size: 10px; font-weight: bold; border-radius: 99px; border: 1px solid #00FFB244; background: #00FFB211; color: #00FFB2; text-transform: uppercase; cursor: default; transition: 0.3s; }
-        .pill:hover { background: #00FFB2; color: #020408; }
+        body { background-color: #020408; color: #E5E7EB; font-family: 'Inter', sans-serif; overflow-x: hidden; cursor: crosshair; }
+        #canvas-container { position: fixed; top: 0; left: 0; z-index: -1; pointer-events: none; opacity: 0.6; }
+        .glass { background: rgba(2, 4, 8, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(0, 255, 178, 0.1); }
+        .terminal-window { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100; width: 95%; max-width: 750px; border: 1px solid #00FFB255; }
+        .ascii-art { font-family: 'Fira Code', monospace; line-height: 1; font-size: 8px; color: #00FFB2; margin-bottom: 20px; white-space: pre; }
+        .pill { padding: 4px 12px; font-size: 10px; font-weight: bold; border-radius: 99px; border: 1px solid #00FFB244; background: #00FFB211; color: #00FFB2; text-transform: uppercase; cursor: help; }
+        .bar-fill { height: 100%; background: #00FFB2; transition: width 1s ease-in-out; }
     </style>
 </head>
-<body class="dark antialiased">
+<body class="antialiased">
 
     <div id="canvas-container"></div>
 
-    <nav class="fixed top-0 w-full z-50 border-b border-hacker-border bg-inherit/80 backdrop-blur-md px-6">
-        <div class="max-w-6xl mx-auto h-16 flex justify-between items-center">
-            <div class="font-mono font-bold tracking-[0.3em] text-hacker-accent text-xl uppercase">HARRY</div>
-            <div class="flex items-center gap-4">
-                <div class="flex bg-gray-800/20 p-1 rounded-full border border-gray-700/50">
-                    <button onclick="setTheme('light')" class="p-2 hover:bg-white/10 rounded-full">☀️</button>
-                    <button onclick="setTheme('dark')" class="p-2 hover:bg-white/10 rounded-full">🌙</button>
-                    <button onclick="setTheme('auto')" class="p-2 hover:bg-white/10 rounded-full text-[10px] font-bold">AUTO</button>
-                </div>
-                <button onclick="toggleTerminal()" class="text-hacker-accent font-bold text-[10px] border border-hacker-accent px-3 py-1 uppercase">AI CORE</button>
+    <div class="fixed left-6 top-1/2 -translate-y-1/2 hidden lg:flex flex-col gap-8 z-40 opacity-40 hover:opacity-100 transition-opacity">
+        <div class="flex flex-col gap-2">
+            <span class="text-[8px] font-mono text-hacker-accent uppercase tracking-widest">BEBAN CPU</span>
+            <div class="w-32 h-1 bg-white/10 rounded-full overflow-hidden">
+                <div id="cpu-bar" class="bar-fill" style="width: 45%"></div>
             </div>
+        </div>
+        <div class="flex flex-col gap-2">
+            <span class="text-[8px] font-mono text-hacker-accent uppercase tracking-widest">MEMORI SISTEM</span>
+            <div class="w-32 h-1 bg-white/10 rounded-full overflow-hidden">
+                <div id="mem-bar" class="bar-fill" style="width: 62%"></div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="fixed top-0 w-full z-50 border-b border-white/5 bg-black/50 backdrop-blur-xl px-8">
+        <div class="max-w-7xl mx-auto h-20 flex justify-between items-center">
+            <div class="font-mono font-black text-2xl tracking-[0.5em] text-hacker-accent">HARRY</div>
+            <button onclick="toggleTerminal()" class="text-[10px] font-bold text-hacker-accent tracking-[0.3em] border border-hacker-accent/30 px-6 py-2 hover:bg-hacker-accent hover:text-black transition">AKSES INTI AI</button>
         </div>
     </nav>
 
-    <section class="min-h-screen flex items-center px-6">
-        <div class="max-w-6xl mx-auto w-full pt-20">
-            <p class="text-hacker-accent font-mono text-[10px] uppercase tracking-[0.5em] mb-4">Official Portfolio</p>
-            <h1 class="text-7xl md:text-[10rem] font-bold mb-8 tracking-tighter leading-none italic">
-                Web<br><span class="text-hacker-accent not-italic">Developer.</span>
-            </h1>
+    <section class="min-h-screen flex items-center px-8">
+        <div class="max-w-7xl mx-auto w-full">
+            <div class="flex flex-col gap-2 mb-10">
+                <span class="text-hacker-accent font-mono text-xs tracking-[0.6em] uppercase opacity-60">Status: Pengembang Web Independen</span>
+                <div class="h-0.5 w-20 bg-hacker-accent"></div>
+            </div>
             
-            <div class="mb-12">
-                <p class="font-mono text-gray-400 text-xs md:text-sm border-l-2 border-hacker-accent pl-6 leading-relaxed max-w-xl mb-6">
-                    I am Harry. I engineer complex web ecosystems, focusing on backend scalability and neural-inspired interfaces. Welcome to my technical domain.
+            <h1 class="text-7xl md:text-[11rem] font-black tracking-tighter leading-[0.8] uppercase mb-12">
+                <span id="typewriter"></span>
+            </h1>
+
+            <div class="max-w-2xl border-l-4 border-hacker-accent pl-8 py-4 mb-16">
+                <p class="text-gray-400 font-mono text-sm md:text-base leading-relaxed mb-8">
+                    Membangun infrastruktur backend yang aman dan skalabel. Spesialis dalam logika Python dan integrasi sistem neural. Setiap baris kode adalah misi penting.
                 </p>
-                <div class="flex flex-wrap gap-2 pl-6">
-                    <span class="pill">Python</span>
-                    <span class="pill">Flask</span>
-                    <span class="pill">PostgreSQL</span>
-                    <span class="pill">Arch Linux</span>
-                    <span class="pill">Docker</span>
-                    <span class="pill">Three.js</span>
+                <div class="flex flex-wrap gap-4 font-mono text-[10px] text-hacker-accent/70">
+                    <span class="pill">API FLASK</span> <span class="pill">ARCH LINUX</span> <span class="pill">WEB3 READY</span> <span class="pill">BLOCKCHAIN LOGIC</span>
                 </div>
             </div>
 
-            <div class="flex flex-wrap gap-4">
-                <button onclick="toggleTerminal()" class="bg-hacker-accent text-dark-bg px-10 py-5 font-bold text-xs uppercase tracking-widest hover:brightness-110 transition shadow-lg shadow-hacker-accent/20">Talk to AI</button>
-                <a href="#contact" class="border border-hacker-border text-white px-10 py-5 font-bold text-xs uppercase tracking-widest hover:bg-white/5 transition">Hire Harry</a>
+            <div class="flex gap-8">
+                <button onclick="toggleTerminal()" class="bg-hacker-accent text-black font-black px-12 py-6 text-xs uppercase tracking-[0.4em] hover:shadow-[0_0_30px_#00FFB2] transition-all">Jalankan AI Chat</button>
             </div>
         </div>
     </section>
 
-    <section id="work" class="py-32 px-6">
-        <div class="max-w-6xl mx-auto">
-            <h2 class="text-[10px] font-bold tracking-[0.5em] text-gray-500 mb-16 uppercase italic">/ Selection of Works</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-                <div class="glass p-10 rounded-2xl hover:border-hacker-accent/50 transition-all duration-500">
-                    <h3 class="text-3xl font-bold mb-3 tracking-tighter uppercase">HitungCuan id</h3>
-                    <p class="text-[10px] text-hacker-accent mb-8 font-mono tracking-[0.3em] uppercase italic italic">Financial System Logic</p>
-                    <a href="https://molecules-timer-recipients-semiconductor.trycloudflare.com" target="_blank" class="text-xs font-bold border-b border-hacker-accent pb-2 hover:text-white transition uppercase tracking-widest">Execute Demo</a>
-                </div>
-                <div class="glass p-10 rounded-2xl hover:border-hacker-accent/50 transition-all duration-500">
-                    <h3 class="text-3xl font-bold mb-3 tracking-tighter uppercase">QRify</h3>
-                    <p class="text-[10px] text-hacker-accent mb-8 font-mono tracking-[0.3em] uppercase italic italic">API Architecture</p>
-                    <a href="https://sorted-diamond-colleague-secretary.trycloudflare.com" target="_blank" class="text-xs font-bold border-b border-hacker-accent pb-2 hover:text-white transition uppercase tracking-widest">Execute Demo</a>
-                </div>
+    <div id="terminal" class="terminal-window glass rounded-lg overflow-hidden">
+        <div class="bg-hacker-accent/10 p-4 flex justify-between items-center border-b border-hacker-accent/20 font-mono text-[10px] tracking-widest uppercase">
+            <span>Terminal Harry Secure Shell v4.0</span>
+            <button onclick="toggleTerminal()" class="text-xl hover:text-hacker-accent">X</button>
+        </div>
+        <div id="chat-box" class="p-10 font-mono text-[11px] h-[450px] overflow-y-auto bg-black/40">
+            <div class="ascii-art">
+  _    _          _____  _______     __
+ | |  | |   /\   |  __ \|  __ \ \   / /
+ | |__| |  /  \  | |__) | |__) \ \_/ / 
+ |  __  | / /\ \ |  _  /|  _  / \   /  
+ | |  | |/ ____ \| | \ \| | \ \  | |   
+ |_|  |_/_/    \_\_|  \_\_|  \_\ |_|   
+            </div>
+            <p class="text-hacker-accent opacity-70 mb-4">[SISTEM]: Otentikasi Berhasil. Pengguna: Tamu.</p>
+            <p class="text-white font-bold mb-4 uppercase tracking-widest">Halo! Saya AI Harry. Ketik perintah di bawah untuk memulai:</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-8 text-[10px] text-gray-500 uppercase">
+                <p>> profil (Tentang Harry)</p>
+                <p>> proyek (Hasil Kerja)</p>
+                <p>> blockchain (Cek Harga BTC)</p>
+                <p>> kontak (Email Harry)</p>
+                <p>> bantuan (Menu Perintah)</p>
             </div>
         </div>
-    </section>
-
-    <section id="contact" class="py-32 px-6 bg-hacker-accent/5">
-        <div class="max-w-4xl mx-auto text-center">
-            <h2 class="text-5xl font-bold mb-10 tracking-tighter uppercase">Get in Touch.</h2>
-            <form class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
-                <input type="text" placeholder="Your Name" class="bg-black/20 border border-hacker-border p-4 rounded-xl text-white outline-none focus:border-hacker-accent">
-                <input type="email" placeholder="Your Email" class="bg-black/20 border border-hacker-border p-4 rounded-xl text-white outline-none focus:border-hacker-accent">
-                <textarea placeholder="Tell me about your project" class="bg-black/20 border border-hacker-border p-4 rounded-xl text-white outline-none focus:border-hacker-accent md:col-span-2" rows="4"></textarea>
-                <button type="submit" class="md:col-span-2 bg-hacker-accent text-dark-bg py-5 font-bold uppercase tracking-[0.3em] text-xs rounded-xl hover:brightness-110 transition">Send Collaboration Request</button>
-            </form>
-            <a href="mailto:harry.surya23@gmail.com" class="text-hacker-accent font-mono text-xl hover:underline italic">harry.surya23@gmail.com</a>
+        <div class="p-6 border-t border-hacker-accent/20 flex gap-4 bg-black/60">
+            <span class="text-hacker-accent">>></span>
+            <input type="text" id="ai-input" class="bg-transparent border-none outline-none w-full font-mono text-xs text-hacker-accent" placeholder="Ketik perintah di sini..." onkeypress="handleChat(event)">
         </div>
-    </section>
-
-    <div class="fixed bottom-0 left-0 w-full bg-inherit/90 backdrop-blur-md border-t border-hacker-border px-6 py-2 flex justify-between items-center z-50">
-        <div class="flex gap-6 items-center">
-            <div class="flex items-center gap-2">
-                <span class="w-2 h-2 bg-hacker-accent rounded-full animate-ping"></span>
-                <span class="text-[9px] font-mono text-hacker-accent uppercase tracking-widest">System: Optimal</span>
-            </div>
-            <span id="live-clock" class="text-[9px] font-mono opacity-50 uppercase">00:00:00</span>
-        </div>
-        <div class="text-[9px] font-mono text-gray-500 uppercase tracking-widest">Node: <span class="text-hacker-accent">raizozunu-vps-01</span></div>
     </div>
 
-    <div id="terminal" class="terminal-window glass rounded-3xl overflow-hidden shadow-2xl">
-        <div class="bg-gray-900/80 p-4 flex justify-between items-center border-b border-hacker-border">
-            <span class="font-mono text-[10px] uppercase tracking-widest text-hacker-accent">Neural Core Assistant</span>
-            <button onclick="toggleTerminal()" class="text-xl opacity-50 hover:opacity-100">×</button>
-        </div>
-        <div id="chat-box" class="p-8 font-mono text-xs h-[350px] overflow-y-auto space-y-4">
-            <p class="text-hacker-accent">[LOG]: AI Core Harry online. Menunggu input...</p>
-        </div>
-        <div class="p-6 border-t border-hacker-border bg-black/20 flex items-center gap-4">
-            <span class="text-hacker-accent font-mono">$</span>
-            <input type="text" id="ai-input" class="bg-transparent border-none outline-none w-full font-mono text-xs text-white" placeholder="Ketik atau gunakan suara..." onkeypress="handleChat(event)">
-            <button onclick="startVoice()" id="mic-btn" class="text-xl grayscale hover:grayscale-0">🎤</button>
-        </div>
-    </div>
+    <footer class="fixed bottom-0 w-full py-4 px-8 border-t border-white/5 bg-black/80 flex justify-between font-mono text-[8px] tracking-[0.4em] text-gray-600 uppercase">
+        <span>Harry 2026 // PROTOKOL RAIZOZUNU</span>
+        <span id="live-clock">00:00:00</span>
+        <span class="text-hacker-accent opacity-50">LATENSI: 12MS</span>
+    </footer>
 
     <script>
-        let scene, camera, renderer, particles, material;
-        const pCount = 2500;
+        // 1. EFEK MENGETIK
+        new Typewriter('#typewriter', {
+            strings: ['WEB DEV', 'SYS ARCH', 'LOGIC ENG'],
+            autoStart: true, loop: true, delay: 100, cursor: '_'
+        });
 
+        // 2. MESIN 3D
+        let scene, camera, renderer, cloud;
         function init3D() {
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.getElementById('canvas-container').appendChild(renderer.domElement);
-
             const geo = new THREE.BufferGeometry();
-            const pos = new Float32Array(pCount * 3);
-            for(let i=0; i<pCount*3; i++) pos[i] = (Math.random() - 0.5) * 100;
+            const pos = new Float32Array(5000 * 3);
+            for(let i=0; i<15000; i++) pos[i] = (Math.random() - 0.5) * 100;
             geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-
-            material = new THREE.PointsMaterial({ size: 0.05, color: 0x00FFB2, transparent: true, opacity: 0.4, blending: THREE.AdditiveBlending });
-            particles = new THREE.Points(geo, material);
-            scene.add(particles);
-            camera.position.z = 30;
+            const mat = new THREE.PointsMaterial({ size: 0.05, color: 0x00FFB2, transparent: true, opacity: 0.3 });
+            cloud = new THREE.Points(geo, mat);
+            scene.add(cloud);
+            camera.position.z = 40;
             animate();
         }
 
         function animate() {
             requestAnimationFrame(animate);
-            particles.rotation.y += 0.0005;
+            cloud.rotation.y += 0.0005;
             renderer.render(scene, camera);
         }
 
-        function setTheme(mode) {
-            const body = document.body;
-            if(mode === 'dark') { body.classList.add('dark'); body.classList.remove('light'); material.color.setHex(0x00FFB2); }
-            else if(mode === 'light') { body.classList.add('light'); body.classList.remove('dark'); material.color.setHex(0x111827); }
-            else { setTheme(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); }
-        }
-
+        // 3. LOGIKA TERMINAL DAN MONITOR
         function toggleTerminal() {
             const t = document.getElementById('terminal');
             t.style.display = t.style.display === 'block' ? 'none' : 'block';
@@ -184,34 +159,25 @@
 
         async function processAI(msg) {
             const box = document.getElementById('chat-box');
-            box.innerHTML += `<p class="text-white opacity-50 uppercase text-[10px]">>> USER: ${msg}</p>`;
+            box.innerHTML += `<p class="text-white mt-4 tracking-widest">> PENGGUNA: ${msg}</p>`;
             const res = await fetch('/api/ai', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({message: msg})
             });
             const data = await res.json();
-            box.innerHTML += `<p class="text-hacker-accent">>> AI [${data.time}]: ${data.reply}</p>`;
+            box.innerHTML += `<p class="text-hacker-accent mt-2 italic">> HARRY AI: ${data.reply}</p>`;
             box.scrollTop = box.scrollHeight;
-            const utt = new SpeechSynthesisUtterance(data.reply);
-            utt.lang = 'id-ID'; window.speechSynthesis.speak(utt);
         }
 
         function handleChat(e) { if(e.key === 'Enter') { processAI(e.target.value); e.target.value = ''; } }
 
-        function startVoice() {
-            const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-            rec.lang = 'id-ID';
-            rec.onstart = () => document.getElementById('mic-btn').classList.add('pulse-mic');
-            rec.onresult = (e) => processAI(e.results[0][0].transcript);
-            rec.onend = () => document.getElementById('mic-btn').classList.remove('pulse-mic');
-            rec.start();
-        }
-
-        setInterval(() => { document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('en-GB'); }, 1000);
+        setInterval(() => {
+            document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('en-GB');
+            document.getElementById('cpu-bar').style.width = Math.floor(Math.random() * (60 - 40 + 1) + 40) + '%';
+        }, 2000);
 
         init3D();
-        setTheme('auto');
     </script>
 </body>
 </html>

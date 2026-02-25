@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 from datetime import datetime
+import requests
 
 app = Flask(__name__)
 
@@ -12,27 +13,34 @@ def ai_core():
     data = request.json
     user_msg = data.get('message', '').lower()
     
-    # Brain Logic Harry (Knowledge Base)
-    knowledge = {
-        "identitas": ["siapa", "nama", "profil", "harry", "developer", "pengembang", "siapa anda"],
-        "portofolio": ["apa ini", "website apa", "fungsi", "tujuan", "portfolio"],
-        "proyek": ["project", "karya", "buat", "hitungcuan", "qrify", "hasil kerja"],
-        "teknologi": ["stack", "bahasa", "coding", "python", "flask", "database", "tech"],
-        "layanan": ["jasa", "sewa", "hire", "kerja", "bangun", "sistem", "kontak"]
+    # Database Pengetahuan Harry
+    responses = {
+        "identitas": "Saya adalah asisten virtual Harry. Harry adalah seorang Web Developer dan System Architect yang ahli dalam Python, Flask, dan infrastruktur Linux.",
+        "blockchain": "Memulai pemindaian jaringan. Data real-time berhasil diambil. Saat ini Harry sedang mengembangkan modul untuk integrasi Web3 dan keamanan data terdesentralisasi.",
+        "proyek": "Harry telah membangun sistem finansial HitungCuan id dan arsitektur API QRify. Semua proyek fokus pada kecepatan dan skalabilitas.",
+        "kontak": "Anda bisa menghubungi Harry melalui email di harry.surya23@gmail.com untuk kolaborasi proyek atau konsultasi teknis.",
+        "perintah": "Anda bisa bertanya tentang: profil harry, proyek yang dibuat, teknologi yang dikuasai, harga blockchain, atau cara menghubungi harry."
     }
     
-    if any(word in user_msg for word in knowledge["identitas"]):
-        reply = "Saya adalah asisten virtual Harry. Harry adalah seorang Web Developer profesional yang berfokus pada arsitektur backend dan sistem skala besar."
-    elif any(word in user_msg for word in knowledge["portofolio"]):
-        reply = "Ini adalah portofolio resmi Harry. Dirancang untuk mendemonstrasikan keahlian dalam Full-Stack Development dan Sistem Neural."
-    elif any(word in user_msg for word in knowledge["proyek"]):
-        reply = "Harry telah membangun HitungCuan id dan QRify. Semua proyek mengutamakan stabilitas dan performa tinggi."
-    elif any(word in user_msg for word in knowledge["teknologi"]):
-        reply = "Teknologi utama yang digunakan meliputi Python, Flask, PostgreSQL, Docker, dan deployment di Arch Linux."
-    elif any(word in user_msg for word in knowledge["layanan"]):
-        reply = "Harry melayani konsultasi arsitektur web dan jasa backend development. Silakan hubungi via email di harry.surya23@gmail.com."
+    # Logika Respon
+    if any(x in user_msg for x in ["siapa", "profil", "harry"]):
+        reply = responses["identitas"]
+    elif any(x in user_msg for x in ["blockchain", "crypto", "btc"]):
+        try:
+            # Mengambil harga Bitcoin asli
+            res = requests.get("https://api.coindesk.com/v1/bpi/currentprice.json").json()
+            price = res['bpi']['USD']['rate']
+            reply = f"{responses['blockchain']} Harga Bitcoin saat ini adalah {price} USD."
+        except:
+            reply = "Gagal terhubung ke node blockchain. Namun, modul Web3 Harry tetap aktif secara lokal."
+    elif any(x in user_msg for x in ["proyek", "hasil kerja", "portfolio"]):
+        reply = responses["proyek"]
+    elif any(x in user_msg for x in ["kontak", "email", "telepon"]):
+        reply = responses["kontak"]
+    elif any(x in user_msg for x in ["bantuan", "perintah", "tolong", "bingung"]):
+        reply = responses["perintah"]
     else:
-        reply = f"Pertanyaan '{user_msg}' telah diterima. Sebagai Web Developer, Harry selalu siap memberikan solusi teknis terbaik untuk Anda."
+        reply = "Perintah tidak dikenal. Ketik perintah untuk melihat apa saja yang bisa saya lakukan."
 
     return jsonify({
         "reply": reply,
